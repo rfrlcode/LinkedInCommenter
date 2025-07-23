@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "LinkedIn AI Commenter",
+  "version": "1.0",
+  "description": "Uses Gemini to generate comments on LinkedIn posts.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://*.linkedin.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.linkedin.com/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

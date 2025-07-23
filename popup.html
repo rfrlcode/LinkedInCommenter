@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LinkedIn AI Commenter</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 250px;
+    }
+    #status {
+      margin-bottom: 10px;
+    }
+    #apiKey {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>LinkedIn AI Commenter</h1>
+  <div id="status"></div>
+  <div style="margin-bottom: 10px; font-size: 12px; color: #666;">
+    Status: <span id="statusText">Unknown</span>
+  </div>
+  <input type="password" id="apiKey" placeholder="Enter your Gemini API Key">
+  <button id="save">Save Key</button>
+  <button id="toggle">Enable</button>
+  <div style="margin-top: 10px; font-size: 11px; color: #888;">
+    Debug: Check browser console for logs
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
