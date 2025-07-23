@@ -2,33 +2,301 @@
 <html>
 <head>
   <title>LinkedIn AI Commenter</title>
+  <meta charset="UTF-8">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
     body {
-      font-family: sans-serif;
-      width: 250px;
+      width: 340px;
+      min-height: 480px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      overflow: hidden;
     }
-    #status {
-      margin-bottom: 10px;
+    
+    .container {
+      padding: 24px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
-    #apiKey {
+    
+    .header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logo {
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 16px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .title {
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .subtitle {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+    }
+    
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    
+    .status-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    
+    .status-item {
+      text-align: center;
+      padding: 12px;
+      background: rgba(102, 126, 234, 0.08);
+      border-radius: 12px;
+      border: 1px solid rgba(102, 126, 234, 0.15);
+    }
+    
+    .status-label {
+      font-size: 12px;
+      color: #6b7280;
+      font-weight: 500;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .status-value {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+    
+    .status-active {
+      color: #10b981;
+    }
+    
+    .status-inactive {
+      color: #ef4444;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+    
+    .input-wrapper {
+      position: relative;
+    }
+    
+    .form-input {
       width: 100%;
-      margin-bottom: 10px;
+      padding: 14px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 14px;
+      background: white;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    
+    .form-input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-input::placeholder {
+      color: #9ca3af;
+    }
+    
+    .button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      outline: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+    
+    .btn-secondary {
+      background: white;
+      color: #667eea;
+      border: 2px solid #667eea;
+    }
+    
+    .btn-secondary:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-1px);
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+    
+    .help-text {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      line-height: 1.5;
+    }
+    
+    .help-text a {
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+      transition: all 0.2s ease;
+    }
+    
+    .help-text a:hover {
+      border-bottom-color: white;
+    }
+    
+    .divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.2);
+      margin: 20px 0;
+    }
+    
+    .emoji {
+      font-size: 16px;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .card {
+      animation: fadeIn 0.3s ease;
     }
   </style>
 </head>
 <body>
-  <h1>LinkedIn AI Commenter</h1>
-  <div id="status"></div>
-  <div style="margin-bottom: 10px; font-size: 12px;">
-    Status: <span id="statusText">Unknown</span><br>
-    API Key: <span id="apiStatus" style="color: #666;">Not configured</span>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <span class="emoji">🤖</span>
+      </div>
+      <div class="title">LinkedIn AI</div>
+      <div class="subtitle">Intelligent Comment Generator</div>
+    </div>
+    
+    <div class="card">
+      <div class="status-grid">
+        <div class="status-item">
+          <div class="status-label">Extension</div>
+          <div class="status-value" id="statusText">Unknown</div>
+        </div>
+        <div class="status-item">
+          <div class="status-label">API Key</div>
+          <div class="status-value" id="apiStatus">Not Set</div>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="apiKey">Gemini API Key</label>
+        <div class="input-wrapper">
+          <input type="password" id="apiKey" class="form-input" placeholder="Enter your Gemini API key...">
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <button id="save" class="btn btn-primary">
+          <span class="emoji">💾</span>
+          Save Key
+        </button>
+        <button id="toggle" class="btn btn-secondary">
+          <span class="emoji">⚡</span>
+          Enable
+        </button>
+      </div>
+    </div>
+    
+    <div class="divider"></div>
+    
+    <div class="help-text">
+      Get your free API key from<br>
+      <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
+    </div>
   </div>
-  <input type="password" id="apiKey" placeholder="Enter your Gemini API Key">
-  <button id="save">Save Key</button>
-  <button id="toggle">Enable</button>
-  <div style="margin-top: 10px; font-size: 11px; color: #888;">
-    Get your API key from: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
-  </div>
+  
   <script src="popup.js"></script>
 </body>
 </html>
