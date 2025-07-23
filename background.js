@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       
       try {
-        const comment = await generateComment(data.apiKey, request.postContent);
+        const comment = await generateComment(data.apiKey, request.postContent, request.commentType);
         console.log('Background: Generated comment:', comment);
         sendResponse({ comment });
       } catch (error) {
@@ -45,19 +45,31 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Function to generate comment using Gemini API
-async function generateComment(apiKey, postContent) {
+async function generateComment(apiKey, postContent, commentType = 'professional') {
+  const commentTypeInstructions = {
+    professional: 'Generate a thoughtful, professional response that adds value to the conversation.',
+    congratulatory: 'Generate a celebratory and supportive comment that congratulates or celebrates the achievement/news.',
+    question: 'Generate a thoughtful follow-up question that encourages further discussion.',
+    insight: 'Generate a comment that shares relevant insight, experience, or perspective related to the topic.',
+    supportive: 'Generate an encouraging and supportive comment that shows empathy and offers encouragement.'
+  };
+
+  const typeInstruction = commentTypeInstructions[commentType] || commentTypeInstructions.professional;
+
   const prompt = `You are a professional LinkedIn user who writes thoughtful, engaging comments on posts. 
 
 Post content: "${postContent}"
 
-Generate a professional, relevant comment that:
+Comment type: ${commentType}
+Instruction: ${typeInstruction}
+
+Generate a relevant comment that:
 - Shows genuine engagement with the content
-- Adds value to the conversation
+- Follows the specific comment type instruction above
 - Is 2-3 sentences maximum
 - Uses a friendly but professional tone
 - Avoids generic phrases like "Great post!" or "Thanks for sharing!"
 - Is personalized to the specific content
-- May include a relevant question or insight
 - Uses appropriate emojis sparingly (0-1 emoji max)
 
 Comment:`;
