@@ -79,11 +79,17 @@ safeStorageGet((data) => {
 
     // Function to create inline comment type dropdown
     function createCommentTypeDropdown(commentBox, postContent, originalContent) {
-      // Remove any existing dropdown
-      const existingDropdown = document.querySelector('.ai-comment-dropdown');
-      if (existingDropdown) {
-        existingDropdown.remove();
-      }
+      // Remove any existing dropdowns more thoroughly
+      const existingDropdowns = document.querySelectorAll('.ai-comment-dropdown');
+      existingDropdowns.forEach(dropdown => dropdown.remove());
+      
+      // Also remove any wrapper elements we might have created
+      const existingWrappers = document.querySelectorAll('[style*="border-top: 1px solid #e5e5e5"]');
+      existingWrappers.forEach(wrapper => {
+        if (wrapper.querySelector('.ai-comment-dropdown')) {
+          wrapper.remove();
+        }
+      });
 
       // Find the comment form container - try multiple approaches
       let commentForm = commentBox.closest('.comments-comment-box');
