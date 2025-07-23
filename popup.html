@@ -19,14 +19,15 @@
 <body>
   <h1>LinkedIn AI Commenter</h1>
   <div id="status"></div>
-  <div style="margin-bottom: 10px; font-size: 12px; color: #666;">
-    Status: <span id="statusText">Unknown</span>
+  <div style="margin-bottom: 10px; font-size: 12px;">
+    Status: <span id="statusText">Unknown</span><br>
+    API Key: <span id="apiStatus" style="color: #666;">Not configured</span>
   </div>
   <input type="password" id="apiKey" placeholder="Enter your Gemini API Key">
   <button id="save">Save Key</button>
   <button id="toggle">Enable</button>
   <div style="margin-top: 10px; font-size: 11px; color: #888;">
-    Debug: Check browser console for logs
+    Get your API key from: <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a>
   </div>
   <script src="popup.js"></script>
 </body>

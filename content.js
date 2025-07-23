@@ -57,16 +57,25 @@ chrome.storage.local.get('enabled', (data) => {
         if (chrome.runtime.lastError) {
           console.error('Runtime error:', chrome.runtime.lastError);
           commentBox.innerHTML = originalContent;
+          alert('Extension connection failed. Please try reloading the page.');
+          return;
+        }
+        
+        if (response && response.error) {
+          console.error('AI generation error:', response.error);
+          commentBox.innerHTML = originalContent;
+          alert(response.error);
           return;
         }
         
         if (response && response.comment) {
-          console.log('Received comment:', response.comment);
+          console.log('Received AI comment:', response.comment);
           commentBox.innerHTML = `<p>${response.comment}</p>`;
           commentBox.focus();
         } else {
           console.error('No comment received');
           commentBox.innerHTML = originalContent;
+          alert('Failed to generate comment. Please try again.');
         }
       });
     }
