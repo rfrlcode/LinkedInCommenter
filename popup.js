@@ -117,7 +117,7 @@ saveButton.addEventListener('click', () => {
 apiKeyInput.addEventListener('input', () => {
   const value = apiKeyInput.value.trim();
   if (value) {
-    apiKeyInput.style.borderColor = '#10b981';
+    apiKeyInput.style.borderColor = '#000';
   } else {
     apiKeyInput.style.borderColor = '#e5e7eb';
   }
