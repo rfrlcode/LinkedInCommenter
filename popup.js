@@ -96,32 +96,40 @@ toggleButton.addEventListener('click', () => {
 saveButton.addEventListener('click', () => {
   const apiKey = apiKeyInput.value.trim();
   const customInstructions = customInstructionsInput.value.trim();
-  
-  if (!apiKey) {
-    showNotification('Please enter an API key', 'error');
-    apiKeyInput.focus();
+
+  if (!apiKey && !customInstructions) {
+    showNotification('Nothing to save', 'error');
     return;
   }
-  
+
   // Add loading state
   const originalContent = saveButton.innerHTML;
   saveButton.innerHTML = '<span class="emoji">⏳</span> Saving...';
   saveButton.disabled = true;
-  
-  const settingsToSave = { apiKey };
+
+  const settingsToSave = {};
+  const settingsToRemove = [];
+
+  if (apiKey) {
+    settingsToSave.apiKey = apiKey;
+  } else {
+    settingsToRemove.push('apiKey');
+  }
+
   if (customInstructions) {
     settingsToSave.customInstructions = customInstructions;
   } else {
-    // Remove custom instructions if empty
-    chrome.storage.local.remove('customInstructions');
+    settingsToRemove.push('customInstructions');
   }
-  
-  chrome.storage.local.set(settingsToSave, () => {
-    chrome.storage.local.get(['enabled'], (data) => {
-      updateStatus(data.enabled, true);
-      showNotification('Settings saved successfully!');
-      saveButton.innerHTML = originalContent;
-      saveButton.disabled = false;
+
+  chrome.storage.local.remove(settingsToRemove, () => {
+    chrome.storage.local.set(settingsToSave, () => {
+      chrome.storage.local.get(['enabled'], (data) => {
+        updateStatus(data.enabled, !!apiKey);
+        showNotification('Settings saved successfully!');
+        saveButton.innerHTML = originalContent;
+        saveButton.disabled = false;
+      });
     });
   });
 });
