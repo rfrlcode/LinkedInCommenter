@@ -232,6 +232,13 @@
       font-size: 16px;
     }
     
+    .help-note {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+    
     @keyframes fadeIn {
       from {
         opacity: 0;
@@ -277,10 +284,18 @@
         </div>
       </div>
       
+      <div class="form-group">
+        <label class="form-label" for="customInstructions">Custom Instructions (Optional)</label>
+        <div class="input-wrapper">
+          <textarea id="customInstructions" class="form-input" rows="3" placeholder="Add your custom instructions for comment generation (e.g., tone, style, specific topics to focus on)..."></textarea>
+        </div>
+        <div class="help-note">These instructions will be used to personalize all generated comments according to your preferences.</div>
+      </div>
+      
       <div class="button-group">
         <button id="save" class="btn btn-primary">
           <span class="emoji">💾</span>
-          Save Key
+          Save Settings
         </button>
         <button id="toggle" class="btn btn-secondary">
           <span class="emoji">⚡</span>

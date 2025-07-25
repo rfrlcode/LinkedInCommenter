@@ -2,6 +2,7 @@ const toggleButton = document.getElementById('toggle');
 const statusText = document.getElementById('statusText');
 const apiStatus = document.getElementById('apiStatus');
 const apiKeyInput = document.getElementById('apiKey');
+const customInstructionsInput = document.getElementById('customInstructions');
 const saveButton = document.getElementById('save');
 
 function updateStatus(enabled, hasApiKey) {
@@ -66,10 +67,13 @@ function showNotification(message, type = 'success') {
 }
 
 // Initialize UI
-chrome.storage.local.get(['enabled', 'apiKey'], (data) => {
+chrome.storage.local.get(['enabled', 'apiKey', 'customInstructions'], (data) => {
   updateStatus(data.enabled, !!data.apiKey);
   if (data.apiKey) {
     apiKeyInput.value = data.apiKey;
+  }
+  if (data.customInstructions) {
+    customInstructionsInput.value = data.customInstructions;
   }
 });
 
@@ -91,6 +95,7 @@ toggleButton.addEventListener('click', () => {
 
 saveButton.addEventListener('click', () => {
   const apiKey = apiKeyInput.value.trim();
+  const customInstructions = customInstructionsInput.value.trim();
   
   if (!apiKey) {
     showNotification('Please enter an API key', 'error');
@@ -103,10 +108,18 @@ saveButton.addEventListener('click', () => {
   saveButton.innerHTML = '<span class="emoji">⏳</span> Saving...';
   saveButton.disabled = true;
   
-  chrome.storage.local.set({ apiKey }, () => {
+  const settingsToSave = { apiKey };
+  if (customInstructions) {
+    settingsToSave.customInstructions = customInstructions;
+  } else {
+    // Remove custom instructions if empty
+    chrome.storage.local.remove('customInstructions');
+  }
+  
+  chrome.storage.local.set(settingsToSave, () => {
     chrome.storage.local.get(['enabled'], (data) => {
       updateStatus(data.enabled, true);
-      showNotification('API Key saved successfully!');
+      showNotification('Settings saved successfully!');
       saveButton.innerHTML = originalContent;
       saveButton.disabled = false;
     });
@@ -123,9 +136,23 @@ apiKeyInput.addEventListener('input', () => {
   }
 });
 
+// Add input feedback for custom instructions
+customInstructionsInput.addEventListener('input', () => {
+  const value = customInstructionsInput.value.trim();
+  if (value) {
+    customInstructionsInput.style.borderColor = '#000';
+  } else {
+    customInstructionsInput.style.borderColor = '#e5e7eb';
+  }
+});
+
 // Add keyboard shortcuts
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && document.activeElement === apiKeyInput) {
+  if (e.key === 'Enter' && (document.activeElement === apiKeyInput || document.activeElement === customInstructionsInput)) {
+    // For textarea, allow Ctrl+Enter or Cmd+Enter to save
+    if (document.activeElement === customInstructionsInput && !(e.ctrlKey || e.metaKey)) {
+      return; // Allow normal Enter in textarea
+    }
     saveButton.click();
   }
 });

@@ -16,8 +16,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.type === 'getComment') {
     console.log('Background: Processing comment request for post:', request.postContent?.substring(0, 100) + '...');
     
-    // Get API key from storage
-    chrome.storage.local.get('apiKey', async (data) => {
+    // Get API key and custom instructions from storage
+    chrome.storage.local.get(['apiKey', 'customInstructions'], async (data) => {
       if (!data.apiKey) {
         console.error('No API key found');
         sendResponse({ 
@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       }
       
       try {
-        const comment = await generateComment(data.apiKey, request.postContent, request.commentType);
+        const comment = await generateComment(data.apiKey, request.postContent, request.commentType, data.customInstructions);
         console.log('Background: Generated comment:', comment);
         sendResponse({ comment });
       } catch (error) {
@@ -45,7 +45,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 // Function to generate comment using Gemini API
-async function generateComment(apiKey, postContent, commentType = 'professional') {
+async function generateComment(apiKey, postContent, commentType = 'professional', customInstructions = null) {
   const commentTypeInstructions = {
     professional: 'Generate a thoughtful, professional response that adds value to the conversation.',
     congratulatory: 'Generate a celebratory and supportive comment that congratulates or celebrates the achievement/news.',
@@ -55,8 +55,15 @@ async function generateComment(apiKey, postContent, commentType = 'professional'
   };
 
   const typeInstruction = commentTypeInstructions[commentType] || commentTypeInstructions.professional;
-
-  const prompt = `You are a professional LinkedIn user who writes thoughtful, engaging comments on posts. 
+  
+  // Build the prompt with custom instructions if provided
+  let prompt = `You are a professional LinkedIn user who writes thoughtful, engaging comments on posts.`;
+  
+  if (customInstructions) {
+    prompt += `\n\nIMPORTANT: Follow these custom instructions when generating the comment:\n${customInstructions}`;
+  }
+  
+  prompt += `
 
 Post content: "${postContent}"
 
@@ -65,7 +72,13 @@ Instruction: ${typeInstruction}
 
 Generate a relevant comment that:
 - Shows genuine engagement with the content
-- Follows the specific comment type instruction above
+- Follows the specific comment type instruction above`;
+  
+  if (customInstructions) {
+    prompt += `\n- Strictly adheres to the custom instructions provided above`;
+  }
+  
+  prompt += `
 - Is 2-3 sentences maximum
 - Uses a friendly but professional tone
 - Avoids generic phrases like "Great post!" or "Thanks for sharing!"
